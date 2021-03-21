@@ -106,9 +106,9 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#answer_current_question' do
-    context 'answer correct' do
-      it 'correct answer to question' do
+  describe '#answer_current_question!' do
+    context 'when answer correct' do
+      it 'and current_level is increased by 1' do
         level = game_w_questions.current_level
         q = game_w_questions.current_game_question
 
@@ -119,8 +119,8 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'answer uncorrect' do
-      it 'uncorrect answer to question' do
+    context 'when answer uncorrect' do
+      it 'and finish game' do
         level = game_w_questions.current_level
         q = game_w_questions.current_game_question
 
@@ -131,8 +131,19 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'last question' do
-      it 'correct answer to final question' do
+    context 'when last question' do
+      it 'and current_level is increased by 1' do
+        game_w_questions.current_level = Question::QUESTION_LEVELS.max
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
+
+        expect(answer).to be_truthy
+        expect(game_w_questions.current_level).to eq(level + 1)
+      end
+
+      it 'and finish game' do
         game_w_questions.current_level = Question::QUESTION_LEVELS.max
         level = game_w_questions.current_level
         q = game_w_questions.current_game_question
@@ -146,13 +157,11 @@ RSpec.describe Game, type: :model do
         expect(game_w_questions.status).to eq :won
         expect(game_w_questions.finished?).to be_truthy
         expect(user.balance).to eq prize
-
-        expect(game_w_questions.current_level).to eq(level + 1)
       end
     end
 
-    context 'time is over' do
-      it 'time is over' do
+    context 'when time is over' do
+      it 'and return false' do
         game_w_questions.created_at = 1.hour.ago
         q = game_w_questions.current_game_question
 
