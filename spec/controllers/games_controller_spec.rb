@@ -51,6 +51,18 @@ RSpec.describe GamesController, type: :controller do
       expect(flash[:notice]).to be
     end
 
+    it 'try to create second game' do
+      expect(game_w_questions.finished?).to be_falsey
+
+      expect { post :create }.to change(Game, :count).by(0)
+
+      game = assigns(:game)
+      expect(game).to be nil
+
+      expect(response).to redirect_to(game_path(game_w_questions))
+      expect(flash[:alert]).to be
+    end
+
     # юзер видит свою игру
     it '#show game' do
       get :show, id: game_w_questions.id
