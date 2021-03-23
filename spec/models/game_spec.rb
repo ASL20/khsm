@@ -107,33 +107,8 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#answer_current_question!' do
-    context 'when answer correct' do
-      it 'and current_level is increased by 1' do
-        level = game_w_questions.current_level
-        q = game_w_questions.current_game_question
-
-        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
-
-        expect(answer).to be_truthy
-        expect(game_w_questions.current_level).to eq(level + 1)
-      end
-    end
-
-    context 'when answer uncorrect' do
-      it 'and finish game' do
-        level = game_w_questions.current_level
-        q = game_w_questions.current_game_question
-
-        answer = game_w_questions.answer_current_question!('g')
-
-        expect(answer).to be_falsey
-        expect(game_w_questions.finished?).to be_truthy
-      end
-    end
-
-    context 'when last question' do
-      it 'and current_level is increased by 1' do
-        game_w_questions.current_level = Question::QUESTION_LEVELS.max
+    context 'and answer correct' do
+      it 'should increase the current level by 1' do
         level = game_w_questions.current_level
         q = game_w_questions.current_game_question
 
@@ -143,31 +118,62 @@ RSpec.describe Game, type: :model do
         expect(game_w_questions.current_level).to eq(level + 1)
       end
 
-      it 'and finish game' do
+      it 'should save game' do
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        game_w_questions.answer_current_question!(q.correct_answer_key)
+
+        expect(game_w_questions.save!).to be_truthy
+      end
+    end
+
+    context 'and answer uncorrect' do
+      it 'should finish game' do
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        game_w_questions.answer_current_question!('g')
+
+        expect(game_w_questions.finished?).to be_truthy
+      end
+
+      it 'should return false' do
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        expect(game_w_questions.answer_current_question!('g')).to be_falsey
+      end
+    end
+
+    context 'and last question' do
+      it 'should increase the current level by 1' do
+        game_w_questions.current_level = Question::QUESTION_LEVELS.max
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        game_w_questions.answer_current_question!(q.correct_answer_key)
+
+        expect(game_w_questions.current_level).to eq(level + 1)
+      end
+
+      it 'should finish game' do
         game_w_questions.current_level = Question::QUESTION_LEVELS.max
         level = game_w_questions.current_level
         q = game_w_questions.current_game_question
 
         answer = game_w_questions.answer_current_question!(q.correct_answer_key)
 
-        expect(answer).to be_truthy
-        prize = game_w_questions.prize
-        expect(prize).to eq Game::PRIZES[Question::QUESTION_LEVELS.max]
-
-        expect(game_w_questions.status).to eq :won
         expect(game_w_questions.finished?).to be_truthy
-        expect(user.balance).to eq prize
       end
     end
 
-    context 'when time is over' do
-      it 'and return false' do
+    context 'and time is over' do
+      it 'should return false' do
         game_w_questions.created_at = 1.hour.ago
         q = game_w_questions.current_game_question
 
-        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
-
-        expect(answer).to be_falsey
+        expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_falsey
       end
     end
   end
