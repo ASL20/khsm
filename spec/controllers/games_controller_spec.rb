@@ -133,7 +133,10 @@ RSpec.describe GamesController, type: :controller do
     end
 
     it 'answers wrong' do
-      put :answer, id: game_w_questions.id, letter: 'g'
+      question = game_w_questions.current_game_question
+      wrong_answer = (question.variants.to_a - [question.correct_answer_key]).sample
+
+      put :answer, id: game_w_questions.id, letter: wrong_answer
       game = assigns(:game)
 
       expect(game.finished?).to be_truthy
