@@ -132,6 +132,15 @@ RSpec.describe GamesController, type: :controller do
       expect(flash.empty?).to be_truthy # удачный ответ не заполняет flash
     end
 
+    it 'answers wrong' do
+      put :answer, id: game_w_questions.id, letter: 'g'
+      game = assigns(:game)
+
+      expect(game.finished?).to be_truthy
+      expect(response).to redirect_to user_path(user)
+      expect(flash.any?).to be_truthy
+    end
+
     it 'takes money' do
       game_w_questions.update_attribute(:current_level, 2)
 
@@ -146,6 +155,7 @@ RSpec.describe GamesController, type: :controller do
       expect(response).to redirect_to user_path(user)
       expect(flash[:warning]).to be
     end
+
 
     # тест на отработку "помощи зала"
     it 'uses audience help' do
