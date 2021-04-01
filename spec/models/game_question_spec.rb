@@ -28,6 +28,19 @@ RSpec.describe GameQuestion, type: :model do
     it '.correct_answer_key' do
       expect(game_question.correct_answer_key).to eq 'b'
     end
+
+    it 'correct .help_hash' do
+      expect(game_question.help_hash).to eq({})
+
+      game_question.help_hash[:key1] = '1'
+      game_question.help_hash[:key2] = '2'
+
+      expect(game_question.save).to be true
+
+      gq = GameQuestion.find(game_question.id)
+
+      expect(gq.help_hash).to eq({key1: '1', key2: '2'})
+    end
   end
 
   # help_hash у нас имеет такой формат:
@@ -48,6 +61,30 @@ RSpec.describe GameQuestion, type: :model do
 
       ah = game_question.help_hash[:audience_help]
       expect(ah.keys).to contain_exactly('a', 'b', 'c', 'd')
+    end
+
+    it 'correct fifty_fifty' do
+      expect(game_question.help_hash).not_to include(:fifty_fifty)
+
+      game_question.add_fifty_fifty
+
+      expect(game_question.help_hash).to include(:fifty_fifty)
+      ff = game_question.help_hash[:fifty_fifty]
+
+      expect(ff).to include('b')
+      expect(ff.size).to eq 2
+    end
+
+    it 'correct friend_call' do
+      expect(game_question.help_hash).not_to include(:friend_call)
+
+      game_question.add_friend_call
+
+      expect(game_question.help_hash).to include(:friend_call)
+      fc = game_question.help_hash[:friend_call]
+
+      expect(fc).to be_a(String)
+      expect(fc).to include('считает, что это вариант')
     end
   end
 
