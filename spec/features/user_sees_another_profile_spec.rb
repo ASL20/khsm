@@ -5,14 +5,13 @@ require 'rails_helper'
 RSpec.feature 'USER sees another profile', type: :feature do
   # Чтобы пользователь мог начать игру, нам надо
   # создать пользователя
-  let(:user1) { FactoryBot.create :user, name: 'user1', id: 1}
-  let!(:user2) { FactoryBot.create :user, name: 'user2', id: 2}
+  let(:user1) { FactoryBot.create :user, name: 'user1'}
+  let!(:user2) { FactoryBot.create :user, name: 'user2'}
 
   let!(:games) {[
     FactoryBot.create(
       :game,
-      id: 1,
-      user_id: 2,
+      user_id: user2.id,
       created_at: Time.parse('2021.03.27, 12:30'),
       finished_at: Time.parse('2021.03.27, 13:00'),
       current_level: 16,
@@ -20,8 +19,7 @@ RSpec.feature 'USER sees another profile', type: :feature do
     ),
     FactoryBot.create(
       :game,
-      id: 2,
-      user_id: 2,
+      user_id: user2.id,
       created_at: Time.parse('2021.03.31, 13:30'),
       finished_at: Time.parse('2021.03.31, 14:30'),
       is_failed: true,
@@ -37,19 +35,18 @@ RSpec.feature 'USER sees another profile', type: :feature do
   # Сценарий просмотра чужого профиля
   scenario 'view another profile' do
     # Заходим в профиль другого игрока
-    visit '/users/2'
+    visit "/users/#{user2.id}"
 
     # проверяем первую игру
-    expect(page).to have_content '1'
+    expect(page).to have_content games[0].id
     expect(page).to have_content 'победа'
     expect(page).to have_content '27 марта, 12:30'
     expect(page).to have_content '16'
     expect(page).to have_content '1 000 000 ₽'
     expect(page).to have_content '50/50'
 
-
     # проверяем вторую игру
-    expect(page).to have_content '2'
+    expect(page).to have_content games[1].id
     expect(page).to have_content 'время'
     expect(page).to have_content '31 марта, 13:30'
     expect(page).to have_content '10'

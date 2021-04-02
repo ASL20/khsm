@@ -13,12 +13,10 @@ RSpec.describe 'users/show', type: :view do
       render
     end
 
-    # Проверяем, что шаблон выводит имена игроков
     it 'renders user name ' do
       expect(rendered).to match 'Пользователь'
     end
 
-    # Проверяем, что шаблон выводит балансы игроков
     it 'not renders button of change password' do
       expect(rendered).not_to match 'Сменить имя и пароль'
     end
@@ -38,12 +36,10 @@ RSpec.describe 'users/show', type: :view do
       render
     end
 
-    # Проверяем, что шаблон выводит имена игроков
     it 'renders user name ' do
       expect(rendered).to match 'Пользователь'
     end
 
-    # Проверяем, что шаблон выводит балансы игроков
     it 'renders button of change password' do
       expect(rendered).to match 'Сменить имя и пароль'
     end
