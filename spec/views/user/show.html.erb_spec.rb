@@ -28,7 +28,7 @@ RSpec.describe 'users/show', type: :view do
 
   context 'Current user' do
     before(:each) do
-      user = FactoryBot.build_stubbed(:user, name: 'Пользователь', balance: 3000, email: 'user1@user.ru')
+      user = FactoryBot.create(:user, name: 'Пользователь', email: 'user1@user.ru')
       sign_in user
 
       assign(:user, user)
